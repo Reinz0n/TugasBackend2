@@ -6,21 +6,34 @@ module.exports = {
         const users = await User.findAll();
         res.status(200).json(users);
     },
+    handlerGetUserById : async (req, res) =>{
+        const {id} = req.params;
+        const user = await User.findByPk(id);
+        if(!user){
+            res.status(404).json({
+                message: "User not found",
+            });
+        } else{
+            res.status(200).json(user);
+        }
+    },
     handlerPostUser : async (req, res) =>{
-        const { email, password, name, organization } = req.body;
-        const hashPassword = await bcrypt.hash(password, 10);
+        const { email, password, fullname, shortname, biodata, angkatan, jabatan } = req.body;
+        // const hashPassword = await bcrypt.hash(password, 10);
         const user = await User.create({
             email,
-            password: hashPassword,
-            name,
-            role : "user",
-            organization,
+            password,
+            fullname,
+            shortname,
+            biodata,
+            angkatan,
+            jabatan,
         });
         res.status(200).json(user);
     },
     handlerPutUser : async (req, res) =>{
         const {id} = req.params;
-        const {name, organization} = req.body;
+        const {fullname, shortname, biodata, angkatan, jabatan,} = req.body;
         const user = await User.findByPk(id);
         if(!user){
             res.status(404).json({
@@ -28,8 +41,11 @@ module.exports = {
             });
         } else{
             await user.update({
-                name,
-                organization,
+                fullname,
+                shortname,
+                biodata,
+                angkatan,
+                jabatan,
             });
             res.status(200).json(user);
         }
@@ -46,6 +62,17 @@ module.exports = {
             res.status(200).json({
                 message: "User deleted",
             });
+        }
+    },
+    handlerGetUserByName : async (req, res) =>{
+        const { fullname } = req.params
+        const user = await User.findByPk(fullname);
+        if(!user){
+            res.status(404).json({
+                message: "User not found",
+            });
+        } else{
+            res.status(200).json(user);
         }
     },
 };
